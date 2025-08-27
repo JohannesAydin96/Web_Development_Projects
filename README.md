@@ -1,11 +1,11 @@
 # Web Development Projects
 
-Detta repository innehåller två separata labbprojekt i webbutveckling:
+This repository contains two separate web development projects:
 
-- **Project 1 – Java Webshop**  
-  En webshop byggd i Java med JSP och JDBC, körd på Tomcat i en trelagersarkitektur.
+- **Java Webshop**  
+  A webshop built in Java with JSP and JDBC, running on Tomcat in a three-layer architecture.
 
-- **Project 2 – ASP.NET MVC Auction System**  
-  Ett förenklat auktionssystem byggt i ASP.NET Core MVC, med trelagersarkitektur, Entity Framework och Identity.
+- **ASP.NET MVC Auction System**  
+  A simplified auction system built in ASP.NET Core MVC, with a three-layer architecture, Entity Framework, and Identity.
 
-Varje projekt har en egen README med detaljerade instruktioner.
+Each project has its own README with details about features, setup, and technologies used.

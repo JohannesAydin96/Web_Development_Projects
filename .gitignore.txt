@@ -1,0 +1,21 @@
+# Visual Studio
+.vs/
+*.user
+*.suo
+*.vsidx
+.vscode/
+
+# Build artifacts
+bin/
+obj/
+
+# Publish
+*.publish/
+
+# NuGet
+*.nupkg
+
+# Eclipse / Java
+target/
+build/
+

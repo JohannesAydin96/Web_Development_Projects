@@ -1,0 +1,90 @@
+﻿@model IPagedList<ProjectApp.Shared.ViewModels.AuctionVM>
+@using X.PagedList
+@using X.PagedList.Mvc.Core;
+
+
+<style>
+    .btn:hover{
+        background-color: #2c3e50 !important;
+        color:white;
+    }
+
+    .table-box {
+        width: 300px !important
+    }
+
+    .table-box strong {
+        background-color: #2c3e50;
+    }
+
+</style>
+
+
+
+@if (Model != null && Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h2 class="m-0">@item.Name</h2>
+            </div>
+            <div class="card-body">
+
+                <div class="card-details" style="display: inline-block;">
+                    <p class="d-flex align-items-center p-2 border border-1 text-white rounded shadow-sm table-box">
+                        <strong class=" text-light px-2 py-1 rounded text-sm font-weight-medium">Current price :</strong>
+                        <span class="text-xl font-weight-bold px-2 ms-2 text-dark">
+                            €@item.StartingPrice.ToString("F2")
+                        </span>
+                    </p>
+                    <p class="d-flex align-items-center p-2 border border-1 text-white rounded shadow-sm table-box">
+                        <strong class=" text-light px-2 py-1 rounded text-sm font-weight-medium">End Time :</strong>
+                        <span class="text-xl font-weight-bold px-2 ms-2 text-dark">
+                            @item.EndTime
+                        </span>
+                       
+                    </p>
+                    <p class="d-flex align-items-center p-2 border border-1 text-white rounded shadow-sm w-auto ">
+                        <strong class=" text-light px-2 py-1 rounded text-sm font-weight-medium" style="background-color:#2c3e50;">Description :</strong>
+                        <span class="text-xl font-weight-bold px-2 ms-2 text-dark w-100">
+                            @item.Description
+                        </span>
+                    </p>
+                    <a href="@Url.Action("AuctionDetails", "Auction", new {  aid= item.Id })" id="buildBtn" class="btn">View Detail</a>
+                    @if (item.OwnerId == @User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value)
+                    {
+                        <input type="hidden" id="hdDescription" value="@item.Description" />
+                        <input type="hidden" id="hdOngoingAuctionID" value="@item.Id" />
+                        <a href="javascript:void(0);" id="btnAuctionEdit" class="btn btnAuctionEdit">Edit</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-info text-center" role="alert">
+        <strong>No records found!</strong> Please check back later.
+    </div>
+}
+<div class="pagination">
+    @Html.PagedListPager(Model, page => Url.Action("OngoingAuctions", new { page }),
+            new PagedListRenderOptions
+    {
+        LinkToFirstPageFormat = "<<",
+        LinkToLastPageFormat = ">>",
+        LinkToPreviousPageFormat = "<",
+        LinkToNextPageFormat = ">",
+        MaximumPageNumbersToDisplay = 5,
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        Display = PagedListDisplayMode.Always,
+        UlElementClasses = new[] { "custom-pagination" },  // Corrected: array of strings
+        LiElementClasses = new[] { "custom-page-item" },  // Corrected: array of strings
+        PageClasses = new[] { "custom-page-link" }        // Corrected: array of strings
+    })
+</div>

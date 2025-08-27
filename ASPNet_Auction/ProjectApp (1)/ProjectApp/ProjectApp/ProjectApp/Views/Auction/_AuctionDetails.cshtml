@@ -1,0 +1,56 @@
+﻿@model ProjectApp.Data.Models.Auction
+
+@if (@Model != null)
+{
+    <div class="lot-details">
+        <div class="p-2">
+             <h4>Bid Details</h4>
+        </div>
+        @if(string.IsNullOrEmpty(Model.AuctionType))
+        {
+            <button class="login-btn my-2" id="buildBtn">Bids Price</button>
+        }
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Username</th>
+                    <th>Bid Price</th>
+                     <th>Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model.Bids != null && Model.Bids.Any())
+                {
+                    foreach (var bid in Model.Bids.OrderByDescending(i=>i.BidAmount))
+                    {
+                        <tr>
+                            <td>@bid.UserName</td>
+                            @if (@bid.BidAmount != null && @bid.BidAmount > 0)
+                            {
+                                <td>€@bid.BidAmount.ToString("F2")</td>
+                            }
+                            else
+                            {
+                                <td>€0.00</td>
+                            }
+                            <td>@bid.BidDateTime</td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="2">No bids available.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
+else
+{
+    <div class="alert alert-info text-center" role="alert">
+        <strong>No records found!</strong> Please check back later.
+    </div>
+}
+

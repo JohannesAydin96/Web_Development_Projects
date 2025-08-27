@@ -1,0 +1,15 @@
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\bin\Debug\net8.0\ProjectApp.Business.deps.json
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\bin\Debug\net8.0\ProjectApp.Business.dll
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\bin\Debug\net8.0\ProjectApp.Business.pdb
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\bin\Debug\net8.0\ProjectApp.Data.dll
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\bin\Debug\net8.0\ProjectApp.Data.pdb
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\obj\Debug\net8.0\ProjectApp.Business.csproj.AssemblyReference.cache
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\obj\Debug\net8.0\ProjectApp.Business.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\obj\Debug\net8.0\ProjectApp.Business.AssemblyInfoInputs.cache
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\obj\Debug\net8.0\ProjectApp.Business.AssemblyInfo.cs
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\obj\Debug\net8.0\ProjectApp.Business.csproj.CoreCompileInputs.cache
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\obj\Debug\net8.0\ProjectA.23C68708.Up2Date
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\obj\Debug\net8.0\ProjectApp.Business.dll
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\obj\Debug\net8.0\refint\ProjectApp.Business.dll
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\obj\Debug\net8.0\ProjectApp.Business.pdb
+C:\Users\johannes\Downloads\ProjectApp (1)\ProjectApp\ProjectApp\ProjectApp.Business\obj\Debug\net8.0\ref\ProjectApp.Business.dll

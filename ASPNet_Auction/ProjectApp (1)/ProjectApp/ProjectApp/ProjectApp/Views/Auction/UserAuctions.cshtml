@@ -1,0 +1,247 @@
+﻿@model IPagedList<ProjectApp.Shared.ViewModels.AuctionVM>
+@using X.PagedList
+@using X.PagedList.Mvc.Core;
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+
+<style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --background-light: #ecf0f1;
+        }
+
+         .container {
+             max-width: 1200px;
+             margin: 0 auto;
+             padding: 0 15px;
+         }
+
+        .card {
+            background-color: white;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            margin: 20px 0;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-header h2 {
+            font-size: 24px;
+            flex-grow: 1;
+        }
+
+        .card-body {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 15px;
+            padding: 15px;
+        }
+
+        @@media (min-width: 768px) {
+            .card-body {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        .card-body img {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .card-body img:hover {
+            transform: scale(1.02);
+        }
+
+        .card-details {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .card-details p {
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            display: inline-block;
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            text-align: center;
+            transition: background-color 0.3s ease;
+            margin-top: 10px;
+        }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1000;
+            width: 90%;
+            max-width: 500px;
+        }
+
+        .modal input,
+        .modal textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .modal button {
+            width: 100%;
+            padding: 12px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 999;
+        }
+
+        .but-right{
+            text-align: end;
+        }
+        .add-list-btn {
+            background-color: var(--secondary-color);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border: 0px;
+            transition: background-color 0.3s ease;
+        }
+
+        .add-list-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+        /* Responsive adjustments */
+        @@media (max-width: 600px) {
+            .card-header {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .card-header h2 {
+                margin-bottom: 10px;
+            }
+        }
+
+
+        .custom-pagination {
+    display: flex;
+    list-style: none;
+    padding: 0;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.custom-page-item {
+    margin: 0 5px;
+}
+
+.custom-page-link {
+    display: inline-block;
+    padding: 10px 15px;
+    text-decoration: none;
+    color: white;
+        border: 1px solid #3498db;
+    border-radius: 5px;
+        background-color: #3498db;
+    transition: all 0.3s ease;
+}
+
+.custom-page-link:hover {
+        background-color: #2c3e50;
+    color: white;
+    text-decoration: none;
+        border-color: #2c3e50;
+}
+
+.custom-page-item.active .custom-page-link {
+        background-color: #2c3e50;
+    color: white;
+        border-color: #2c3e50;
+}
+
+
+
+</style>
+
+@* <div>
+    <span>User Auctions</span>
+</div> *@
+
+
+@if (User.Identity.IsAuthenticated)
+{
+<div class="container" style="margin-top: 100px;">
+    <div class="but-right">
+    </div>
+    <div class="dvPartial">
+       @Html.Partial("_UserAuctions", Model)
+    </div>
+  
+
+    <!-- Overlay for modal -->
+    <div id="overlay" class="overlay"></div>
+
+
+</div>
+}

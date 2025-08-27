@@ -1,0 +1,559 @@
+﻿@model IPagedList<ProjectApp.Shared.ViewModels.AuctionVM>
+@using X.PagedList
+@using X.PagedList.Mvc.Core;
+
+@{
+    ViewData["Title"] = "Home Page";
+}
+
+
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+
+<script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+
+<style>
+    :root {
+        --primary-color: #2c3e50;
+        --secondary-color: #3498db;
+        --accent-color: #e74c3c;
+        --background-light: #ecf0f1;
+    }
+
+   
+
+
+    .card {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+        overflow: hidden;
+        margin: 20px 0;
+        transition: transform 0.3s ease;
+    }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+    .card-header {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 15px;
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+    }
+
+        .card-header h2 {
+            font-size: 24px;
+            flex-grow: 1;
+        }
+
+    .card-body {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 15px;
+        padding: 15px;
+    }
+
+    @@media (min-width: 768px) {
+        .card-body {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+
+    .card-body img {
+        width: 100%;
+        height: 300px;
+        border-radius: 8px;
+        object-fit: cover;
+        transition: transform 0.3s ease;
+    }
+
+        .card-body img:hover {
+            transform: scale(1.02);
+        }
+
+    .card-details {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+        .card-details p {
+            margin-bottom: 10px;
+        }
+
+    .btn {
+        display: inline-block;
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 10px 15px;
+        border-radius: 6px;
+        text-decoration: none;
+        text-align: center;
+        transition: background-color 0.3s ease;
+        margin-top: 10px;
+    }
+
+        .btn:hover {
+            background-color: var(--primary-color);
+        }
+
+    /* Modal Styles */
+
+        .modal input,
+        .modal textarea {
+            width: 100%;
+            padding: 10px;
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+       
+
+    .overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 999;
+    }
+
+    .but-right {
+        text-align: end;
+    }
+
+    .add-list-btn {
+        background-color: var(--secondary-color);
+        color: white;
+        padding: 10px 20px;
+        border-radius: 6px;
+        text-decoration: none;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        border: 0px;
+        transition: background-color 0.3s ease;
+    }
+
+        .add-list-btn:hover {
+            background-color: var(--primary-color);
+        }
+
+    /* Responsive adjustments */
+    @@media  (max-width: 600px) {
+        .card-header {
+            flex-direction: column;
+            text-align: center;
+        }
+
+            .card-header h2 {
+                margin-bottom: 10px;
+            }
+    }
+
+
+    .custom-pagination {
+        display: flex;
+        list-style: none;
+        padding: 0;
+        justify-content: center;
+        margin-top: 20px;
+    }
+
+    .custom-page-item {
+        margin: 0 5px;
+    }
+
+    .custom-page-link {
+        display: inline-block;
+        padding: 10px 15px;
+        text-decoration: none;
+        color: white;
+        border: 1px solid #3498db;
+        border-radius: 5px;
+        background-color: #3498db;
+        transition: all 0.3s ease;
+    }
+
+        .custom-page-link:hover {
+        background-color: #2c3e50;
+            color: white;
+            text-decoration: none;
+        border-color: #2c3e50;
+        }
+
+    .custom-page-item.active .custom-page-link {
+        background-color: #2c3e50;
+        color: white;
+        border-color: #2c3e50;
+    }
+
+</style>
+
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="container" style="margin-top: 100px;">
+        <div class="but-right my-2">
+            <button class="add-list-btn" id="addListBtn"> Add List</button>
+        </div>
+        <div class="dvPartial">
+            @Html.Partial("_OngoingAuctions", Model)
+        </div>
+
+
+        <!-- Overlay for modal -->
+        <div id="overlay" class="overlay"></div>
+
+        <!-- Add List Modal -->
+        <div id="addListModal" class="modal">
+            <div class="modal-content ">
+                <div class="modal-header ">
+                    <h5 class="modal-title" id="editModalLabel">Add Auction</h5>
+                    <button type="button" id="closeAddListModal" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <form id="addListForm" class="mt-2">
+                    <input type="hidden" id="hdUserID" value="@User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value" />
+                    <div class="form-group">
+                        <label for="editor" class="form-label">Name</label>
+                        <input type="text" id="nameInput" name="name" placeholder="Name" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editor" class="form-label">Auction Date</label>
+                        <input type="date" id="dateInput" name="date" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editor" class="form-label">Time</label>
+
+                        <input type="time" id="timeInput" name="time" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editor" class="form-label">Starting Price</label>
+                        <input type="number" id="priceInputModal" name="price" placeholder="Price in €" class="form-control" min="0" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editor" class="form-label">Description</label>
+
+                        <div id="editor" style="height: 150px;"></div>
+                        <!-- Hidden textarea to sync content -->
+                        <textarea id="description" name="description" class="form-control" hidden required></textarea>
+                    </div>
+                    <button type="submit" id="saveListBtn" class="btn btn-primary">Save</button>
+                    <button type="button" id="cancelButton_AddPopUp" class="btn btn-secondary">Cancel</button>
+                </form>
+            </div>
+        </div>
+
+    </div>
+}
+
+<!-- Add List Button -->
+<!-- Add List Modal -->
+<!-- Edit Auction Modal -->
+<div id="editModal" class="modal fade" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <!-- Modal Header -->
+            <div class="modal-header">
+                <h5 class="modal-title" id="editModalLabel">Edit Auction</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <!-- Modal Body -->
+            <form id="editForm">
+                <div class="modal-body">
+                    <input type="hidden" id="hdAuctionId" /> <!-- Auction ID will be set dynamically -->
+                    <div class="form-group">
+                        <label for="editor" class="form-label">Description</label>
+                        <textarea id="editor" name="description" class="form-control editEditor" style="height: 150px;" required></textarea>
+                    </div>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="submit" id="auctionBtn" class="btn btn-primary">Save</button>
+                    <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- Include jQuery from CDN -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script>
+    // [Previous JavaScript remains the same]
+    // Get elements
+    const addListBtn = document.getElementById('addListBtn');
+    const closeAddListModal = document.getElementById("closeAddListModal");
+    const addListModal = document.getElementById('addListModal');
+    const overlay = document.getElementById('overlay');
+    const saveListBtn = document.getElementById('saveListBtn');
+    const nameInput = document.getElementById('nameInput');
+    const dateInput = document.getElementById('dateInput');
+    const timeInput = document.getElementById('timeInput');
+    const priceInputModal = document.getElementById('priceInputModal');
+
+    // Initialize Quill Editor
+
+    const quill = new Quill('#editor', {
+        theme: 'snow',
+        placeholder: 'Enter description here...'
+    });
+
+    const form = document.querySelector('Form'); // Adjust this selector to target your form
+    const description = document.querySelector('#description');
+
+    form.addEventListener('submit', function () {
+        // Get content from the Quill editor and set it to the hidden textarea
+        description.value = quill.root.innerHTML;
+    });
+
+    // Show the modal and overlay
+    addListBtn.addEventListener('click', function () {
+        addListModal.style.display = 'block';
+        overlay.style.display = 'block';
+    });
+
+    // Close modal when clicking the overlay
+    overlay.addEventListener('click', function () {
+        addListModal.style.display = 'none';
+        overlay.style.display = 'none';
+    });
+
+    closeAddListModal.addEventListener("click", function () {
+        addListModal.style.display = "none";
+        overlay.style.display = "none"; // Hide overlay as well
+    });
+
+    document.getElementById("cancelButton_AddPopUp").addEventListener("click", function () {
+        addListModal.style.display = 'none';
+        overlay.style.display = 'none';
+    });
+
+    document.getElementById("cancelButton").addEventListener("click", function () {
+        const modalElement = document.getElementById("editModal");
+        const modalInstance = bootstrap.Modal.getInstance(modalElement);
+        if (modalInstance) {
+            modalInstance.hide();
+        }
+    });
+
+
+
+    $(document).ready(function () {
+
+
+
+
+    @if (TempData["ToastrMessage"] != null && TempData["ToastrType"] != null)
+    {
+        <text>
+                toastr["@TempData["ToastrType"]"]("@TempData["ToastrMessage"]");
+        </text>
+    }
+
+            // Open modal when the register button is clicked
+            $('.btnAuctionEdit').on('click', function () {
+
+                const modalElement = document.getElementById('editModal');
+                const modal = new bootstrap.Modal(modalElement);
+                // Get the auction ID and description from the hidden input fields
+                // Get the closest .card element to the clicked button
+                var card = $(this).closest('.card');
+
+                // Get the auction ID and description from the closest card's hidden inputs
+                var auctionId = card.find('#hdOngoingAuctionID').val();
+                var description = card.find('#hdDescription').val();
+
+                // Set the auction ID and description into the modal's hidden field and textarea
+                $('#hdAuctionId').val(auctionId);
+                $('.editEditor').val(description);
+
+                modal.show();
+
+                $('.modal-backdrop').remove();
+            });
+
+
+
+        // $('#btnAuctionEdit').on('click', function (e) {
+        //     e.preventDefault();
+        //     debugger;
+        //     // Get the auction ID and description from the hidden input fields
+        //     // Get the closest .card element to the clicked button
+        //     var card = $(this).closest('.card');
+
+        //     // Get the auction ID and description from the closest card's hidden inputs
+        //     var auctionId = card.find('#hdOngoingAuctionID').val();
+        //     var description = card.find('#hdDescription').val();
+
+        //     // Set the auction ID and description into the modal's hidden field and textarea
+        //     $('#hdAuctionId').val(auctionId);
+        //     $('.editEditor').val(description);
+
+        //     // Show the modal
+        //     $('#editModal').fadeIn();
+        // });
+
+
+
+        // Initialize the form submission
+        $("#saveListBtn").on("click", function (e) {
+            e.preventDefault(); // Prevent default form submission
+            debugger
+            // Clear any previous validation messages
+            $(".is-invalid").removeClass("is-invalid");
+            $(".invalid-feedback").remove();
+
+            // Perform client-side validation
+            let isValid = true;
+
+            if (!$("#nameInput").val()) {
+                isValid = false;
+                $("#nameInput").addClass("is-invalid")
+                    .after('<div class="invalid-feedback">Name is required.</div>');
+            }
+
+            if (!$("#dateInput").val()) {
+                isValid = false;
+                $("#dateInput").addClass("is-invalid")
+                    .after('<div class="invalid-feedback">Date is required.</div>');
+            }
+
+            if (!$("#timeInput").val()) {
+                isValid = false;
+                $("#timeInput").addClass("is-invalid")
+                    .after('<div class="invalid-feedback">Time is required.</div>');
+            }
+
+            if (!$("#priceInputModal").val() || $("#priceInputModal").val() <= 0) {
+                isValid = false;
+                $("#priceInputModal").addClass("is-invalid")
+                    .after('<div class="invalid-feedback">Price must be greater than 0.</div>');
+            }
+
+            @* if (!$("#editor").val()) {
+                isValid = false;
+                $("#editor").addClass("is-invalid")
+                    .after('<div class="invalid-feedback">Description is required.</div>');
+            } *@
+
+
+                if (quill.getText().trim().length === 0) {
+                isValid = false;
+                $("#editor").addClass("is-invalid"); // Add invalid class to the editor div
+                if ($("#editor").next(".invalid-feedback").length === 0) {
+                    $("#editor").after('<div class="invalid-feedback">Description is required.</div>');
+                }
+            } else {
+                isValid = true;
+                $("#editor").removeClass("is-invalid"); // Remove invalid class if valid
+                $("#editor").next(".invalid-feedback").remove(); // Remove error message if it exists
+            }
+            // Stop if validation fails
+            if (!isValid) return;
+
+            debugger;
+
+            // Collect form data
+            const date = $("#dateInput").val(); // Get the date value
+            const time = $("#timeInput").val(); // Get the time value
+            const endTime = new Date(`${date}T${time}`).toISOString();
+
+            debugger;
+            // Collect form data
+            const formData = {
+                Name: $("#nameInput").val(),
+                EndTime: endTime,
+                StartingPrice: $("#priceInputModal").val(),
+                Description: $("#editor").text(),
+                OwnerId: $("#hdUserID").val()
+            };
+
+            $.ajax({
+                url: "/Auction/CreateAuction",
+                type: "POST",
+                contentType: "application/json; charset=utf-8", // Ensure correct content type
+                data: JSON.stringify(formData), // Send data as JSON string
+                success: function (response) {
+                    if (response.success) {
+                        toastr.success("Auction added successfully!");
+                        $("#addListModal").remove();
+                        window.location.reload();
+
+                    } else {
+                        alert("Failed to add item: " + response.message);
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while adding the item. Please try again later.");
+                }
+            });
+        });
+
+
+
+        $(document).ready(function () {
+            // Handle form submission
+            $("#editForm").submit(function (event) {
+                event.preventDefault(); // Prevent default form submission
+
+                // Get data
+                var auctionId = $("#hdAuctionId").val();
+                var description = $(".editEditor").val();
+
+                // Clear previous validation messages
+                $("#error-description").text("");
+
+                // Perform AJAX POST
+                $.ajax({
+                    url: '/Auction/Edit', // Update with your controller action URL
+                    type: 'POST',
+                    data: { auctionId: auctionId, description: description },
+                    success: function (response) {
+                        if (response.success) {
+                            toastr.success("Auction updated successfully!");
+                            $("#addListModal").remove();
+                            window.location.reload();
+                        } else if (response.errors) {
+                            // Display validation errors
+                            if (response.errors.description) {
+                                $("#error-description").text(response.errors.description);
+                            }
+                        }
+                    },
+                    error: function () {
+                        toastr.error("An error occurred while updating the auction. Please try again.");
+                    }
+                });
+            });
+        });
+
+
+
+
+
+        $("#addBtnOnword").on("click", function (e) {
+            e.preventDefault();
+            getOnwardAuctions();
+        })
+
+        function datetime() {
+            const now = new Date();
+            return now.toISOString(); // Returns ISO 8601 format: 'YYYY-MM-DDTHH:mm:ss.sssZ'
+        }
+
+    });
+
+</script>

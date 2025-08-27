@@ -1,0 +1,54 @@
+﻿
+@model IPagedList<ProjectApp.Shared.ViewModels.AuctionVM>
+@using X.PagedList
+@using X.PagedList.Mvc.Core;
+
+@if(Model != null && Model.Count > 0)
+{
+    foreach (var item in Model)
+    {
+        <div class="card">
+            <div class="card-header">
+                <h2>@item.Name</h2>
+            </div>
+            <div class="card-body">
+
+                <div class="card-details">
+                    <p><strong>Current price:</strong> €@item.StartingPrice</p>
+                    <p><strong>End Time:</strong> @item.EndTime</p>
+                    <p>
+                       @item.Description
+                    </p>
+                    <a href="@Url.Action("WonAuctionDetails", "Auction", new {  aid= item.Id })" id="buildBtn" class="btn">View Detail</a>
+                </div>
+            </div>
+        </div>
+    }
+}
+else
+{
+    <div class="alert alert-info text-center" role="alert">
+        <strong>No records found!</strong> Please check back later.
+    </div>
+}
+
+
+<div class="pagination">
+    @Html.PagedListPager(Model, page => Url.Action("OngoingAuctions", new { page }),
+            new PagedListRenderOptions
+    {
+        LinkToFirstPageFormat = "<<",
+        LinkToLastPageFormat = ">>",
+        LinkToPreviousPageFormat = "<",
+        LinkToNextPageFormat = ">",
+        MaximumPageNumbersToDisplay = 5,
+        DisplayLinkToFirstPage = PagedListDisplayMode.Always,
+        DisplayLinkToLastPage = PagedListDisplayMode.Always,
+        DisplayLinkToPreviousPage = PagedListDisplayMode.Always,
+        DisplayLinkToNextPage = PagedListDisplayMode.Always,
+        Display = PagedListDisplayMode.Always,
+        UlElementClasses = new[] { "custom-pagination" },  // Corrected: array of strings
+        LiElementClasses = new[] { "custom-page-item" },  // Corrected: array of strings
+        PageClasses = new[] { "custom-page-link" }        // Corrected: array of strings
+    })
+</div>

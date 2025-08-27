@@ -1,0 +1,153 @@
+﻿@* @model ProjectApp.Shared.ViewModels.RegisterVM
+<section class="hero">
+    <div class="container hero-content">
+        <h1>Discover Extraordinary Auctions</h1>
+        <p>
+            Experience the thrill of bidding on unique items from around the
+            world. AuctionPro connects passionate collectors with rare treasures.
+        </p>
+        <a href="#" class="cta-button">Start Exploring</a>
+    </div>
+</section>
+
+<section class="features container">
+    <div class="features-grid">
+        <div class="feature-item">
+            <div class="feature-icon">🔒</div>
+            <h3>Secure Transactions</h3>
+            <p>
+                Advanced encryption and verified seller protocols ensure safe and
+                trusted bidding experiences.
+            </p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">🌍</div>
+            <h3>Diverse Auctions</h3>
+            <p>
+                Explore an extensive marketplace featuring unique art, rare
+                collectibles, and global treasures.
+            </p>
+        </div>
+        <div class="feature-item">
+            <div class="feature-icon">⏱️</div>
+            <h3>Real-Time Bidding</h3>
+            <p>
+                Engage in live, transparent auctions with instant updates and
+                seamless mobile notifications.
+            </p>
+        </div>
+    </div>
+</section>
+
+
+<div id="registrationModal" class="modal fade" tabindex="-1" role="dialog">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Create Your Account</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <form id="registerForm" asp-action="Register" asp-controller="Account" method="post" novalidate>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label asp-for="Username"></label>
+                        <input asp-for="Username" class="form-control" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Email"></label>
+                        <input asp-for="Email" class="form-control" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password"></label>
+                        <input asp-for="Password" class="form-control" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="ConfirmPassword"></label>
+                        <input asp-for="ConfirmPassword" class="form-control" />
+                        <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal">
+    <div class="modal-content">
+
+        <h2>Login to Your Account</h2>
+        <form id="loginForm" asp-action="Login" asp-controller="Account" method="post">
+            @Html.AntiForgeryToken()
+            <div class="form-group">
+                <label asp-for="Username"></label>
+                <input asp-for="Username" class="form-control" />
+                <span asp-validation-for="Username" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Password"></label>
+                <input asp-for="Password" class="form-control" />
+                <span asp-validation-for="Password" class="text-danger"></span>
+            </div>
+
+            <button type="submit" class="submit-button">Login</button>
+        </form>
+    </div>
+</div>
+
+
+
+
+
+<!-- First include jQuery -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<!-- Then include jQuery Validation -->
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation@1.19.3/dist/jquery.validate.min.js"></script>
+
+<!-- Finally, include jQuery Unobtrusive Validation -->
+<script src="https://cdn.jsdelivr.net/npm/jquery-validation-unobtrusive@3.2.11/dist/jquery.validate.unobtrusive.min.js"></script>
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $("#registerForm").submit(function (event) {
+            event.preventDefault();
+
+            $.ajax({
+                url: $(this).attr("action"),
+                type: $(this).attr("method"),
+                data: $(this).serialize(),
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.message);
+                        $('#registrationModal').modal('hide');
+                    } else if (response.errors) {
+                        // Clear existing errors
+                        $("#registerForm .text-danger").html("");
+
+                        // Show validation errors
+                        $.each(response.errors, function (index, error) {
+                            $("<span class='text-danger'>" + error + "</span><br>").appendTo("#registerForm .modal-body");
+                        });
+                    }
+                },
+                error: function () {
+                    alert("An error occurred while processing your request.");
+                }
+            });
+        });
+    });
+
+</script> *@

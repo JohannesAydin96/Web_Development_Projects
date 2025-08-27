@@ -1,0 +1,227 @@
+﻿@model ProjectApp.Shared.ViewModels.RegisterVM
+
+
+<section class="hero">
+    <div class="hero-content text-center  justify-content-center container">
+        <h1>Discover Extraordinary Auctions</h1>
+        <p>
+            Experience the thrill of bidding on unique items from around the
+            world. AuctionPro connects passionate collectors with rare treasures.
+        </p>
+        <a href="#" class="cta-button">Start Exploring</a>
+    </div>
+</section>
+@if (User.Identity.IsAuthenticated)
+{
+    <section class="features container">
+        <div class="features-grid">
+            <div class="feature-item">
+               <h4 class="">
+                    <a href="/Auction/OngoingAuctions" class="nav-link text-dark ">Ongoing Auctions</a>
+                </h4>
+                <p>
+                    For assistance with ongoing auctions, reach out 
+                    via our support channels or call our hotline.
+                </p>
+            </div>
+            <div class="feature-item">
+                
+                <h4 class="text-dark">
+                    <a href="/Auction/UserAuctions" class="nav-link text-dark">User Auctions</a>
+                </h4>
+                <p>
+                    Contact us for help with user auctions through our support
+                    team or customer service hotline.
+                </p>
+            </div>
+            <div class="feature-item">
+                
+                <h4 class="text-dark"> 
+                    <a href="/Auction/WonAuctions" class="nav-link text-dark">Won Auctions</a>
+                </h4>
+                <p>
+                    For any inquiries regarding won auctions, 
+                    feel free to contact our support team.
+                </p>
+            </div>
+        </div>
+    </section>
+}
+
+
+
+<!-- Login Modal -->
+<div id="loginModal" class="modal fade" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form id="loginForm" asp-action="Login" asp-controller="Account" method="post">
+                <div class="modal-body">
+
+                    @Html.AntiForgeryToken()
+                    <div class="form-group">
+                        <label asp-for="Username"></label>
+                        <input asp-for="Username" class="form-control" />
+                        <span asp-validation-for="Username" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label asp-for="Password"></label>
+                        <input asp-for="Password" class="form-control" type="password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                    </div>
+
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="submit-button">Login</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+<!-- Login Modal -->
+<div id="registrationModal" class="modal fade" tabindex="-1" aria-labelledby="loginModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Login</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+
+            <form id="registerForm" asp-action="Register" asp-controller="Account" method="post" novalidate>
+                <div class="modal-body">
+
+                    <div class="modal-body">
+                        <div class="form-group">
+                            <label asp-for="Username"></label>
+                            <input asp-for="Username" class="form-control" />
+                            <span asp-validation-for="Username" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Email"></label>
+                            <input asp-for="Email" class="form-control" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="Password"></label>
+                            <input asp-for="Password" class="form-control" type="password" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="form-group">
+                            <label asp-for="ConfirmPassword"></label>
+                            <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+                    <button type="submit" class=" submit-button ">Register</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+
+    @if (TempData["ToastrMessage"] != null && TempData["ToastrType"] != null)
+    {
+        <text>
+                toastr["@TempData["ToastrType"]"]("@TempData["ToastrMessage"]");
+        </text>
+    }
+
+
+
+            $("#registerForm").submit(function (event) {
+                event.preventDefault();
+
+                $.ajax({
+                    url: $(this).attr("action"),
+                    type: $(this).attr("method"),
+                    data: $(this).serialize(),
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.message);
+                            // Show success message in Toastr
+                            toastr.success(response.message);
+                            $('#registrationModal').modal('hide');
+                        } else if (response.errors) {
+                            // Show validation errors in Toastr (if needed)
+                            toastr.error("There were validation errors. Please correct them and try again.");
+
+                            // Clear existing errors in the form
+                            $("#registerForm .text-danger").html(""); // Clear validation messages
+                            $(".dynamic-errors").remove(); // Remove dynamically appended errors
+
+                            // Append new validation errors dynamically
+                            $.each(response.errors, function (index, error) {
+                                $("<span class='text-danger dynamic-errors'>" + error + "</span><br>")
+                                    .appendTo("#registerForm .modal-body");
+                            });
+                        }
+                    },
+                    error: function () {
+                        alert("An error occurred while processing your request.");
+                    }
+                });
+            });
+
+
+        // // Open modal when the register button is clicked
+        // $('#registerButton').on('click', function () {
+        //     // $('#registrationModal').modal('show');
+        //     // $('.modal-backdrop').remove();
+
+        //     const modalElement = document.getElementById('registrationModal');
+        //     const modal = new bootstrap.Modal(modalElement);
+        //     modal.show();
+        //     $('.modal-backdrop').remove();
+
+        // });
+
+        // Ensure the modal and backdrop are cleaned up properly when hidden
+        // $('#registrationModal').on('hidden.bs.modal', function () {
+        //     $('.modal-backdrop').remove();
+        // });
+
+
+
+
+    });
+
+
+    // Open modal when the register button is clicked
+    $('#registerButton').on('click', function () {
+
+        const modalElement = document.getElementById('registrationModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+        $('.modal-backdrop').remove();
+
+    });
+
+
+
+    // Open modal when the register button is clicked
+    $('#loginButton').on('click', function () {
+
+        const modalElement = document.getElementById('loginModal');
+        const modal = new bootstrap.Modal(modalElement);
+        modal.show();
+
+        $('.modal-backdrop').remove();
+    });
+
+</script>
